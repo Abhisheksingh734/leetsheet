@@ -24,18 +24,21 @@ const Card = ({ data }) => {
         </thead>
         <tbody>
           {data.map((task, index) => (
-            <tr
-              key={`${task.questionFrontendId}-${index}`} // Unique key
-              className={`${
-                markedRows[task.questionFrontendId]
-                  ? "bg-green-100"
-                  : "bg-white"
-              } hover:bg-gray-100 transition-all duration-150 ease-in-out`}
-            >
+            <tr key={`${task.questionFrontendId}-${index}`}>
               <td className="px-6 py-4 border-b text-xl font-semibold text-gray-900">
                 {task.title}
               </td>
-              <td className="px-6 py-4 border-b">{task.Difficulty}</td>
+              <td
+                className={`px-6 py-4 border-b ${
+                  task.Difficulty.toLowerCase() === "easy"
+                    ? "text-green-500"
+                    : task.Difficulty.toLowerCase() === "medium"
+                    ? "text-yellow-500"
+                    : "text-red-500"
+                }`}
+              >
+                {task.Difficulty}
+              </td>
               <td className="px-6 py-4 border-b">{task.Topics}</td>
               <td className="px-6 py-4 border-b">{task.Likes}</td>
               <td className="px-6 py-4 border-b text-center">

@@ -8,35 +8,34 @@ const App = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDifficulty, setSelectedDifficulty] = useState("All");
 
-  const fetchData = async (offset) => {
+  const fetchData = async (page) => {
+    const limit = 50; // Limit of items per page
+    const offset = (page - 1) * limit; // Calculate the offset based on the current page
+
     setLoading(true);
     try {
-      console.log(`Fetching data starting at offset: ${offset}`);
       const response = await fetch(
-        `https://sheetdb.io/api/v1/369w89f027n82?limit=50&offset=${offset}`
+        `https://sheetdb.io/api/v1/369w89f027n82?limit=${limit}&offset=${offset}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      console.log("Fetched data:", data);
 
-      if (data.length === 0) {
-        console.log("No more data available.");
-        return; // Exit if no new data
-      }
-
-      // Append new data logic
+      // Check for duplicates using a Set for existing IDs
       setTaskData((prevData) => {
         const existingIds = new Set(
-          prevData.map((item) => item.questionFrontendId)
+          prevData.map((task) => task.questionFrontendId)
+        ); // Replace with your unique identifier
+        const newTasks = data.filter(
+          (task) => !existingIds.has(task.questionFrontendId)
         );
-        const newData = data.filter(
-          (item) => !existingIds.has(item.questionFrontendId)
-        );
-        return [...prevData, ...newData]; // Append only new items
+        return [...prevData, ...newTasks];
       });
+
+      console.log(data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
@@ -48,21 +47,20 @@ const App = () => {
     fetchData(currentPage);
   }, [currentPage]);
 
-  useEffect(() => {
-    fetchData(offset);
-  }, [currentPage]);
-
   const handleNextPage = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
-  const offset = (currentPage - 1) * 50;
 
   const filteredData = taskData.filter((task) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      task.title.toLowerCase().includes(query) ||
-      task.Topics.toLowerCase().includes(query)
-    );
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.Topics.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const matchesDifficulty =
+      selectedDifficulty === "All" ||
+      task.Difficulty.toLowerCase() === selectedDifficulty.toLowerCase();
+
+    return matchesSearch && matchesDifficulty;
   });
 
   return (
@@ -78,9 +76,20 @@ const App = () => {
             placeholder="Search by name or topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border rounded p-2 w-full"
+            className="border rounded p-2 w-4/12 mr-5 focus:outline-none focus:border-gray-400"
           />
+          <select
+            value={selectedDifficulty}
+            onChange={(e) => setSelectedDifficulty(e.target.value)}
+            className="border rounded p-2 w-36 "
+          >
+            <option value="All">All Difficulties</option>
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
         </div>
+        {/* <div className="mb-4"></div> */}
         {filteredData.length > 0 ? (
           <Card data={filteredData} />
         ) : (

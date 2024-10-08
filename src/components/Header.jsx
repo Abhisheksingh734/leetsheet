@@ -1,36 +1,39 @@
 import React from "react";
+import * as XLSX from "xlsx";
 
 const Header = () => {
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(
+        "https://sheetdb.io/api/v1/369w89f027n82" // Fetch all data from the API
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+
+      // Convert JSON data to worksheet
+      const worksheet = XLSX.utils.json_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Tasks");
+
+      // Export to Excel
+      XLSX.writeFile(workbook, "tasks.xlsx");
+    } catch (error) {
+      console.error("Failed to download data:", error);
+    }
+  };
+
   return (
-    <header className="bg-gray-700 dark:bg-gray-800 sticky top-0 z-50 shadow-lg p-4">
+    <header className="bg-gray-500 sticky shadow-lg p-4">
       <nav className="flex justify-between items-center">
         <h1 className="text-3xl font-bold text-orange-500">LEETSHEET</h1>
-        <ul className="flex space-x-6">
-          <li>
-            <a
-              href="#home"
-              className="text-gray-200 dark:text-gray-400 text-lg hover:text-orange-400 transition"
-            >
-              Home
-            </a>
-          </li>
-          <li>
-            <a
-              href="#about"
-              className="text-gray-200 dark:text-gray-400 text-lg hover:text-orange-400 transition"
-            >
-              About
-            </a>
-          </li>
-          <li>
-            <a
-              href="#contact"
-              className="text-gray-200 dark:text-gray-400 text-lg hover:text-orange-400 transition"
-            >
-              Contact
-            </a>
-          </li>
-        </ul>
+        <button
+          onClick={handleDownload}
+          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+        >
+          Download All Data
+        </button>
       </nav>
     </header>
   );
