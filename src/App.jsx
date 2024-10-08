@@ -9,6 +9,11 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDifficulty, setSelectedDifficulty] = useState("All");
+  const [markedRows, setMarkedRows] = useState(() => {
+    // Initialize markedRows from local storage
+    const storedMarks = localStorage.getItem("markedRows");
+    return storedMarks ? JSON.parse(storedMarks) : {};
+  });
 
   const fetchData = async (page) => {
     const limit = 50; // Limit of items per page
@@ -23,19 +28,17 @@ const App = () => {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      console.log(data);
 
-      // Check for duplicates using a Set for existing IDs
       setTaskData((prevData) => {
         const existingIds = new Set(
           prevData.map((task) => task.questionFrontendId)
-        ); // Replace with your unique identifier
+        );
         const newTasks = data.filter(
           (task) => !existingIds.has(task.questionFrontendId)
         );
         return [...prevData, ...newTasks];
       });
-
-      console.log(data);
     } catch (error) {
       console.error("There was a problem with the fetch operation:", error);
     } finally {
@@ -51,6 +54,26 @@ const App = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+  // Save marked rows to local storage whenever they change
+  useEffect(() => {
+    localStorage.setItem("markedRows", JSON.stringify(markedRows));
+    console.log("Saved marked rows to local storage:", markedRows);
+  }, [markedRows]);
+
+  const handleMark = (id) => {
+    setMarkedRows((prevState) => {
+      const newState = { ...prevState };
+      if (newState[id]) {
+        // If it exists, delete it
+        delete newState[id];
+      } else {
+        // Otherwise, add it
+        newState[id] = true; // You can set it to any value, here true
+      }
+      return newState;
+    });
+  };
+
   const filteredData = taskData.filter((task) => {
     const matchesSearch =
       task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -64,24 +87,21 @@ const App = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-400 text-gray-900">
+    <div className="min-h-screen bg-[#1A1A1A] text-gray-300">
       <Header />
       <main className="p-6">
-        <h1 className="text-3xl font-bold mb-4 text-center">
-          LeetSheet Task Tracker
-        </h1>
         <div className="mb-4">
           <input
             type="text"
             placeholder="Search by name or topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border rounded p-2 w-4/12 mr-5 focus:outline-none focus:border-gray-400"
+            className="border rounded p-2 w-4/12 mr-5 focus:outline-none focus:border-[#FFA116]"
           />
           <select
             value={selectedDifficulty}
             onChange={(e) => setSelectedDifficulty(e.target.value)}
-            className="border rounded p-2 w-36 "
+            className="border rounded p-2 w-36 bg-[#282828] text-gray-300 focus:outline-none focus:border-[#FFA116]"
           >
             <option value="All">All Difficulties</option>
             <option value="easy">Easy</option>
@@ -89,9 +109,12 @@ const App = () => {
             <option value="hard">Hard</option>
           </select>
         </div>
-        {/* <div className="mb-4"></div> */}
         {filteredData.length > 0 ? (
-          <Card data={filteredData} />
+          <Card
+            data={filteredData}
+            markedRows={markedRows}
+            handleMark={handleMark}
+          />
         ) : (
           <p>No tasks found.</p>
         )}
@@ -99,7 +122,7 @@ const App = () => {
           <button
             onClick={handleNextPage}
             disabled={loading}
-            className={`px-4 py-2 bg-orange-500 text-white rounded ${
+            className={`px-4 py-2 bg-[#FFA116] text-white rounded ${
               loading ? "opacity-50 cursor-not-allowed" : "hover:bg-orange-600"
             }`}
           >

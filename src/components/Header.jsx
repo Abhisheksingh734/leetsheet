@@ -25,14 +25,14 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gray-500 sticky shadow-lg p-4">
+    <header className="bg-[#282828] sticky shadow-lg p-4">
       <nav className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-orange-500">LEETSHEET</h1>
+        <h1 className="text-3xl font-bold text-[#FFA116]">LEETSHEET</h1>
         <button
           onClick={handleDownload}
-          className="px-4 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 transition"
+          className="px-4 py-2 bg-[#FFA116] text-white rounded hover:bg-orange-600 transition"
         >
-          Download All Data
+          Export
         </button>
       </nav>
     </header>
