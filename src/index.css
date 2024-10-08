@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+input[type="checkbox"]:checked {
+  background-color: #68d391; /* Keep the background green when checked */
+  border-color: #68d391; /* Optional: Set the border color to match */
+}
+
+input[type="checkbox"]:checked:hover {
+  background-color: #68d391; /* Keep it green on hover when checked */
+  border-color: #68d391; /* Keep the border color green on hover when checked */
+}
+
+input[type="checkbox"]:hover {
+  background-color: #f7fafc; /* Optional: Default hover behavior when not checked */
+}
