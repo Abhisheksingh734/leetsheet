@@ -96,7 +96,7 @@ const App = () => {
             placeholder="Search by name or topic..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="border rounded p-2 w-4/12 mr-5 focus:outline-none focus:border-[#FFA116]"
+            className="border text-black rounded p-2 w-4/12 mr-5 focus:outline-none focus:border-[#FFA116]"
           />
           <select
             value={selectedDifficulty}

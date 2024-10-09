@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 
 const Card = ({ data, markedRows, handleMark }) => {
   return (
@@ -22,7 +23,12 @@ const Card = ({ data, markedRows, handleMark }) => {
               }
             >
               <td className="px-6 py-4 border-b text-xl font-semibold text-gray-300">
-                {task.title}
+                <a
+                  href={`https://leetcode.com/problems/` + task.titleSlug}
+                  target="_blank"
+                >
+                  {task.title}
+                </a>
               </td>
               <td
                 className={`px-6 py-4 border-b ${
