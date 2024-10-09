@@ -5,6 +5,7 @@ import Card from "./components/Card.jsx";
 
 const App = () => {
   const [taskData, setTaskData] = useState([]);
+  const [dpp, setdpp] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -15,12 +16,18 @@ const App = () => {
     return storedMarks ? JSON.parse(storedMarks) : {};
   });
 
+  // api to fetch dpp daily problems = https://alfa-leetcode-api.onrender.com/
+
   const fetchData = async (page) => {
     const limit = 500; // Limit of items per page
     const offset = (page - 1) * limit; // Calculate the offset based on the current page
 
     setLoading(true);
     try {
+      const res = await fetch("https://alfa-leetcode-api.onrender.com/daily");
+      const dpp = await res.json();
+      setdpp(dpp);
+
       const response = await fetch(
         `https://sheetdb.io/api/v1/gqw6i5u2bkwlh?limit=${limit}&offset=${offset}`
       );
@@ -111,6 +118,7 @@ const App = () => {
         </div>
         {filteredData.length > 0 ? (
           <Card
+            dpp={dpp}
             data={filteredData}
             markedRows={markedRows}
             handleMark={handleMark}
