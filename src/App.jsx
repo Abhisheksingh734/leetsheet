@@ -16,7 +16,7 @@ const App = () => {
   });
 
   const fetchData = async (page) => {
-    const limit = 50; // Limit of items per page
+    const limit = 500; // Limit of items per page
     const offset = (page - 1) * limit; // Calculate the offset based on the current page
 
     setLoading(true);
