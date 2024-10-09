@@ -22,7 +22,7 @@ const App = () => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://sheetdb.io/api/v1/369w89f027n82?limit=${limit}&offset=${offset}`
+        `https://sheetdb.io/api/v1/gqw6i5u2bkwlh?limit=${limit}&offset=${offset}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
